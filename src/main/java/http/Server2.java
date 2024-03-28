@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Server2 {
     public static final int TCP_PORT = 8081;
-    public static List<Quote> quotes = new ArrayList<Quote>();
+    public static List<Quote> quotes = new ArrayList<>();
 
 
     public static void main(String[] args) {

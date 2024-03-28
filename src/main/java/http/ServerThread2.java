@@ -41,7 +41,7 @@ public class ServerThread2 implements Runnable{
             if(received.equals("quote of the day"))
             {
                 Request request = new Request(HttpMethod.GET, "/quote-of-the-day");
-                Response response = (new RequestHandler()).handle(request);
+                Response response = (new RequestHandler()).handle(request,null);
                 String responseString = response.getResponseString();
                 System.out.println(responseString);
                 Gson gson = new Gson();

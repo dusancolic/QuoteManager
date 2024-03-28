@@ -8,7 +8,9 @@ import serialization.Quote;
 import java.io.*;
 import java.net.Socket;
 
+import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 public class ServerThread implements Runnable{
     private Socket client;
@@ -44,12 +46,26 @@ public class ServerThread implements Runnable{
 
             String method = stringTokenizer.nextToken();
             String path = stringTokenizer.nextToken();
-
+            String cookie = null;
             System.out.println("\nHTTP ZAHTEV KLIJENTA:\n");
             do {
                 System.out.println(requestLine);
                 requestLine = in.readLine();
+                if (requestLine.contains("Cookie:"))
+                {
+                    cookie = requestLine.split(":")[1];
+                    if(!Server.quoteMap.containsKey(cookie))
+                    {
+                        Server.quoteMap.put(cookie, new ArrayList<>());
+                    }
+                }
             } while (!requestLine.trim().equals(""));
+
+            if(cookie == null)
+            {
+                cookie = UUID.randomUUID().toString();
+                Server.quoteMap.put(cookie, new ArrayList<>());
+            }
 
             if (method.equals(HttpMethod.POST.toString())) {
 //                 TODO: Ako je request method POST, procitaj telo zahteva (parametre)
@@ -60,7 +76,7 @@ public class ServerThread implements Runnable{
                 String quote = s.split("&")[1].split("=")[1];
                 author = author.replace("+", " ");
                 quote = quote.replace("+", " ");
-                Server.quotes.add(new Quote(author, quote));
+                Server.quoteMap.get(cookie).add(new Quote(author, quote));
 
             }
 
@@ -77,7 +93,7 @@ public class ServerThread implements Runnable{
             Request request = new Request(HttpMethod.valueOf(method), path);
 
             RequestHandler requestHandler = new RequestHandler();
-            Response response = requestHandler.handle(request);
+            Response response = requestHandler.handle(request,cookie);
 
             String responseString = response.getResponseString();
             responseString = responseString.replace("<label>Quotes: </label><br>", "<label>Quote of the day:<br>"+"<p>" + quote.getAuthor() + ": \""+ quote.getText() +"\"</p>" + "</label><br> <label>Quotes: </label><br>");

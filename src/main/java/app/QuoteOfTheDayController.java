@@ -10,9 +10,11 @@ import java.util.Random;
 
 public class QuoteOfTheDayController extends Controller{
     private static boolean quotePicked = false;
+    private String cookie;
     private static Quote quote;
-    public QuoteOfTheDayController(Request request) {
+    public QuoteOfTheDayController(Request request, String cookie) {
         super(request);
+        this.cookie = cookie;
     }
     @Override
     public Response doGet() {
@@ -24,7 +26,7 @@ public class QuoteOfTheDayController extends Controller{
         }
         String content = quote.toString();
 
-        return new HtmlResponse(content);    }
+        return new HtmlResponse(content,cookie);    }
 
     @Override
     public Response doPost() {

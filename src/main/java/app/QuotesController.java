@@ -8,9 +8,10 @@ import http.response.Response;
 import serialization.Quote;
 
 public class QuotesController extends Controller {
-
-    public QuotesController(Request request) {
+    private String cookie;
+    public QuotesController(Request request, String cookie){
         super(request);
+        this.cookie = cookie;
     }
     @Override
     public Response doGet() {
@@ -20,7 +21,7 @@ public class QuotesController extends Controller {
                 "<label>Quote: </label><input name=\"quote\" type=\"quote\"><br><br>" +
                 "<button>Save Quote</button>" +"</form>"+
                 "<label>Quotes: </label><br>";
-                for (Quote quote : Server.quotes) {
+                for (Quote quote : Server.quoteMap.get(cookie)) {
                     htmlBody += "<p>" + quote.getAuthor() + ": \"" + quote.getText() + "\"</p>";
                 }
 
@@ -28,7 +29,7 @@ public class QuotesController extends Controller {
         String content = "<html><head><title>Odgovor servera</title></head>\n";
         content += "<body>" + htmlBody + "</body></html>";
 
-        return new HtmlResponse(content);    }
+        return new HtmlResponse(content,cookie);    }
 
     @Override
     public Response doPost() {
